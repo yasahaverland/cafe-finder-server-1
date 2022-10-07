@@ -7,7 +7,7 @@ const authLockedRoute = require('./controllers/api-v1/authLockedRoute')
 
 // config express app
 const app = express()
-const PORT = process.env.PORT || 3001 
+const PORT = process.env.PORT || 8000 
 // for debug logging 
 const rowdyResults = rowdy.begin(app)
 // cross origin resource sharing 
