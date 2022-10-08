@@ -39,6 +39,9 @@ app.get('/', (req, res) => {
 // prefixing the routes with a semantic version 
 app.use('/api-v1/users', require('./controllers/api-v1/users.js'))
 
+// cafe.js controller routing
+app.use('/api-v1/cafes', require('./controllers/api-v1/cafes.js'))
+
 // hey listen
 app.listen(PORT, () => {
   rowdyResults.print()
