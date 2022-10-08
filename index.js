@@ -26,7 +26,11 @@ const myMiddleWare = (req, res, next ) => {
 
 // GET / -- test index route
 // route specific middleware, only will be applied here on this route
-app.get('/', authLockedRoute, (req, res) => {
+// app.get('/', authLockedRoute, (req, res) => {
+//   console.log(res.locals)
+//   res.json({ msg: 'hello backend 🤖' })
+// })
+app.get('/', (req, res) => {
   console.log(res.locals)
   res.json({ msg: 'hello backend 🤖' })
 })
