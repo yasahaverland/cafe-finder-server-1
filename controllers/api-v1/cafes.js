@@ -3,10 +3,14 @@ const db = require('../../models')
 const axios = require('axios')
 require('dotenv').config()
 
-// EXAMPLE API CALL
+// EXAMPLE API CALL - need to make this into /cafes/:id/results
 router.get('/', async(req, res) => {
     try {
-        const response = await axios.get('https://api.yelp.com/v3/businesses/north-india-restaurant-san-francisco', {
+        const response = await axios.get('https://api.yelp.com/v3/businesses/search', {
+            params: {
+                'location': '92886',
+                'term': 'coffee shop'
+            },
             headers: {
                 'Authorization': `Bearer ${process.env.API_KEY}`
             }
@@ -31,22 +35,39 @@ router.get('/', async(req, res) => {
 
 
 
-// GET /cafes/:id -- return a single cafe
-router.get('/:id', async (req, res) => {
+// GET /cafes/:id -- return a single cafe based on Yelp's id
+router.get('/:yelpId', async (req, res) => {
     try {
-        const cafe = await db.Cafe.findById(req.params.id)
-
-        res.json(cafe)
+        const response = await axios.get(`https://api.yelp.com/v3/businesses/${req.params.yelpId}`, {
+            headers: {
+                'Authorization': `Bearer ${process.env.API_KEY}`
+            }
+        })
+        res.json(response.data)
     } catch(err) {
         console.log(err)
         res.status(500).json({ message: 'internal server error' })
     }
 })
 
-// POST /cafes/:id -- create a new cafe in the db -- needs signal from client
-router.post('/:id', async (req, res) => {
+// POST /cafes/:id -- saves a cafe into the db
+router.post('/:yelpId', async (req, res) => {
     try {
-        const newCafe = await db.Cafe.create(req.body)
+        const response = await axios.get(`https://api.yelp.com/v3/businesses/${req.params.yelpId}`, {
+            headers: {
+                'Authorization': `Bearer ${process.env.API_KEY}`
+            }
+        })
+        const newCafe = await db.Cafe.create({
+            yelpId: response.data.id,
+            name: response.data.name,
+            location: `${response.data.display_address[0]} ${response.data.display_address[1]} ${response.data.display_address[2]}`,
+            website_link: response.data.url,
+            phone_number: response.data.display_phone,
+            price: response.data.price
+
+        })
+        console.log(newCafe)
         res.status(201).json(newCafe)
     } catch(err) {
         console.log(err)
@@ -54,8 +75,8 @@ router.post('/:id', async (req, res) => {
     }
 })
 
-// PUT /cafes/:id -- update a single cafe
-router.put('/:id', async (req, res) => {
+// PUT /cafes/:id -- update a single cafe -- should not be used unless editing
+router.put('/:yelpId', async (req, res) => {
     try {
         // getting the id from the url route parameters
         // getting the data to update from the request body
@@ -71,10 +92,10 @@ router.put('/:id', async (req, res) => {
 
  
 // DELETE /cafe/:id -- delete a cafe from the database
-router.delete('/:id', async (req, res) => {
+router.delete('/:yelpId', async (req, res) => {
     try {
         // delete that thing with that id
-        await db.Cafe.findByIdAndDelete(req.params.id)
+        await db.Cafe.findOneAndDelete({yelpId: req.params.yelpId})
         // status 204 -- no content (we cannot send and json data back with this)
         res.sendStatus(204)
     } catch(err) {
