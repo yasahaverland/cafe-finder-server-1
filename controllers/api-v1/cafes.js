@@ -23,16 +23,6 @@ router.get('/', async(req, res) => {
     }
 })
 
-// .com/api-v1/results?=:location 
-// router.get('/results?=:locationId', async (req, res) => {
-//     try {
-        
-//     } catch(err) {
-//         console.log(err)
-//         res.status(500).json({ message: 'internal server error' })
-//     }
-// })
-
 
 
 // GET /cafes/:id -- return a single cafe based on Yelp's id
@@ -61,11 +51,10 @@ router.post('/:yelpId', async (req, res) => {
         const newCafe = await db.Cafe.create({
             yelpId: response.data.id,
             name: response.data.name,
-            location: `${response.data.display_address[0]} ${response.data.display_address[1]} ${response.data.display_address[2]}`,
+            location: `${response.data.location.display_address[0]} ${response.data.location.display_address[1]} ${response.data.location.display_address[2]}`,
             website_link: response.data.url,
             phone_number: response.data.display_phone,
             price: response.data.price
-
         })
         console.log(newCafe)
         res.status(201).json(newCafe)
@@ -82,7 +71,14 @@ router.put('/:yelpId', async (req, res) => {
         // getting the data to update from the request body
         // ensuring that the query returns the new values with the options object
         const options = { new: true }
-        const updatedCafe = await db.Cafe.findByIdAndUpdate(req.params.id, req.body, options)
+        const updatedCafe = await db.Cafe.findByIdAndUpdate({yelpId: req.params.yelpId}, {
+            yelpId: response.data.id,
+            name: response.data.name,
+            location: `${response.data.location.display_address[0]} ${response.data.location.display_address[1]} ${response.data.location.display_address[2]}`,
+            website_link: response.data.url,
+            phone_number: response.data.display_phone,
+            price: response.data.price
+            }, options)
         res.json(updatedCafe)
     } catch(err) {
         console.log(err)
