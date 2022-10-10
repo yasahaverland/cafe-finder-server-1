@@ -4,11 +4,11 @@ const axios = require('axios')
 require('dotenv').config()
 
 // EXAMPLE API CALL - need to make this into /cafes/:id/results
-router.get('/', async(req, res) => {
+router.get('/:parameter', async(req, res) => {
     try {
         const response = await axios.get('https://api.yelp.com/v3/businesses/search', {
             params: {
-                'location': '92886',
+                'location': `92886`,
                 'term': 'coffee shop'
             },
             headers: {
@@ -23,7 +23,7 @@ router.get('/', async(req, res) => {
     }
 })
 
-
+// GET /cafes/results?=:searchParameters
 
 // GET /cafes/:id -- return a single cafe based on Yelp's id
 router.get('/:yelpId', async (req, res) => {
@@ -48,10 +48,12 @@ router.post('/:yelpId', async (req, res) => {
                 'Authorization': `Bearer ${process.env.API_KEY}`
             }
         })
+        
         const newCafe = await db.Cafe.create({
             yelpId: response.data.id,
             name: response.data.name,
-            location: `${response.data.location.display_address[0]} ${response.data.location.display_address[1]} ${response.data.location.display_address[2]}`,
+            // location: `${response.data.location.display_address[0]} ${response.data.location.display_address[1]} ${response.data.location.display_address[2]}`,
+            location: `${response.data.location.display_address[0]}`,
             website_link: response.data.url,
             phone_number: response.data.display_phone,
             price: response.data.price
