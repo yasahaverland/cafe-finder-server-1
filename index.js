@@ -16,6 +16,7 @@ app.use(cors())
 // app.use(express.urlencoded({ extended: false })) // optional
 app.use(express.json())
 
+
 const myMiddleWare = (req, res, next ) => {
   console.log('hello from a middleware')
   next() // okay express, go to the next thing
@@ -27,22 +28,25 @@ const myMiddleWare = (req, res, next ) => {
 // GET / -- test index route
 // route specific middleware, only will be applied here on this route
 // app.get('/', authLockedRoute, (req, res) => {
-//   console.log(res.locals)
-//   res.json({ msg: 'hello backend 🤖' })
-// })
-app.get('/', (req, res) => {
-  console.log(res.locals)
-  res.json({ msg: 'hello backend 🤖' })
-})
-
-// controllers
-// prefixing the routes with a semantic version 
-app.use('/api-v1/users', require('./controllers/api-v1/users.js'))
-
-// cafe.js controller routing
-app.use('/api-v1/cafes', require('./controllers/api-v1/cafes.js'))
-
-// hey listen
+  //   console.log(res.locals)
+  //   res.json({ msg: 'hello backend 🤖' })
+  // })
+  app.get('/', (req, res) => {
+    console.log(res.locals)
+    res.json({ msg: 'hello backend 🤖' })
+  })
+  
+  // controllers
+  // prefixing the routes with a semantic version 
+  app.use('/api-v1/users', require('./controllers/api-v1/users.js'))
+  
+  // cafe.js controller routing
+  app.use('/api-v1/cafes', require('./controllers/api-v1/cafes.js'))
+  
+  // comments.js controller routing
+  app.use('/api-v1/comments', require('./controllers/api-v1/comments.js'))
+  
+  // hey listen
 app.listen(PORT, () => {
   rowdyResults.print()
   console.log(`is that port ${PORT} I hear? 🙉`)
