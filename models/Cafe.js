@@ -19,6 +19,9 @@ const CommentSchema = new mongoose.Schema({
 })
 
 const CafeSchema = new mongoose.Schema({
+    yelpId: {
+        type: String
+    },
     name: {
         type: String
     },
