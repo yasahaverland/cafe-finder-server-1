@@ -25,6 +25,7 @@ router.get('/:parameter', async(req, res) => {
 
 // GET /cafes/results?=:searchParameters
 
+
 // GET /cafes/:id -- return a single cafe based on Yelp's id
 router.get('/:yelpId', async (req, res) => {
     try {
@@ -48,7 +49,7 @@ router.post('/:yelpId', async (req, res) => {
                 'Authorization': `Bearer ${process.env.API_KEY}`
             }
         })
-        
+
         const newCafe = await db.Cafe.create({
             yelpId: response.data.id,
             name: response.data.name,

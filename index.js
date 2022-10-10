@@ -31,10 +31,13 @@ const myMiddleWare = (req, res, next ) => {
   //   console.log(res.locals)
   //   res.json({ msg: 'hello backend 🤖' })
   // })
-  app.get('/', (req, res) => {
-    console.log(res.locals)
-    res.json({ msg: 'hello backend 🤖' })
-  })
+  
+// ONLY FOR TESTING PURPOSES, DO NOT USE IN FRONTEND
+app.get('/', (req, res) => {
+  res.json("Hello from backend")
+})
+
+app.use('/api-v1/', require('./controllers/api-v1/home.js'))
   
   // controllers
   // prefixing the routes with a semantic version 
