@@ -8,7 +8,7 @@ router.get('/:parameter', async(req, res) => {
     try {
         const response = await axios.get('https://api.yelp.com/v3/businesses/search', {
             params: {
-                'location': `92886`,
+                'location': ``,
                 'term': 'coffee shop'
             },
             headers: {
