@@ -3,12 +3,12 @@ const db = require('../../models')
 const axios = require('axios')
 require('dotenv').config()
 
-// EXAMPLE API CALL - need to make this into /cafes/:id/results
-router.get('/:parameter', async(req, res) => {
+// GET /cafes/:searchId
+router.get('/:searchId', async(req, res) => {
     try {
         const response = await axios.get('https://api.yelp.com/v3/businesses/search', {
             params: {
-                'location': `92886`,
+                'location': `${req.params.searchId}`,
                 'term': 'coffee shop'
             },
             headers: {
@@ -22,9 +22,6 @@ router.get('/:parameter', async(req, res) => {
         res.status(500).json({ message: 'internal server error' })
     }
 })
-
-// GET /cafes/results?=:searchParameters
-
 
 // GET /cafes/:id -- return a single cafe based on Yelp's id
 router.get('/:yelpId', async (req, res) => {
