@@ -4,7 +4,7 @@ const axios = require('axios')
 require('dotenv').config()
 
 // GET /cafes/:searchId
-router.get('/results/:searchId', async(req, res) => {
+router.get('/results/:searchId', async (req, res) => {
     try {
         const response = await axios.get('https://api.yelp.com/v3/businesses/search', {
             params: {
@@ -17,7 +17,7 @@ router.get('/results/:searchId', async(req, res) => {
         })
         console.log(response.data)
         res.json(response.data)
-    } catch(err) {
+    } catch (err) {
         console.log(err)
         res.status(500).json({ message: 'internal server error' })
     }
@@ -38,17 +38,21 @@ router.get('/:yelpId', async (req, res) => {
             )
         })
 
-        const newCafe = await db.Cafe.create({
-            yelpId: response.data.id,
-            name: response.data.name,
-            location: `${address}`,
-            website_link: response.data.url,
-            phone_number: response.data.display_phone,
-            price: response.data.price
-        })
-
-        res.json(response.data)
-    } catch(err) {
+        await db.Cafe.findOneAndUpdate({ yelpId: req.params.yelpId },
+            {
+                $set:
+                {
+                    yelpId: response.data.id,
+                    name: response.data.name,
+                    location: `${address}`,
+                    website_link: response.data.url,
+                    phone_number: response.data.display_phone,
+                    price: response.data.price
+                }
+            }, { upsert: true })
+        const foundCafe = await db.Cafe.findOne({ yelpId: req.params.yelpId })
+        res.json(foundCafe)
+    } catch (err) {
         console.log(err)
         res.status(500).json({ message: 'internal server error' })
     }
@@ -63,10 +67,10 @@ router.post('/:yelpId', async (req, res) => {
             }
         })
 
-        
+
         console.log(newCafe)
         res.status(201).json(newCafe)
-    } catch(err) {
+    } catch (err) {
         console.log(err)
         res.status(500).json({ message: 'internal server error' })
     }
@@ -106,6 +110,7 @@ router.put('/:yelpId/comments/:id', async (req, res) => {
 // PUT /:yelpId/comments/:id -- edit a comment, (if comment look weird in user profile check here).
 router.delete('/:yelpId/comments/:id', async (req, res) => {
     try {
+
         const foundCafe = await db.Cafe.findOne({yelpId: req.params.yelpId})
         foundCafe.comment.splice(req.params.id, 1)
         foundCafe.save(err => {
@@ -113,10 +118,12 @@ router.delete('/:yelpId/comments/:id', async (req, res) => {
         })
         res.json(foundCafe)
     } catch(err) {
+
         console.log(err)
         res.status(500).json({ message: 'internal server error' })
     }
 })
+
 
 // PUT /cafes/:id -- update a single cafe -- should not be used unless editing
 // router.put('/:yelpId', async (req, res) => {
@@ -140,8 +147,9 @@ router.delete('/:yelpId/comments/:id', async (req, res) => {
 //     }    
 //  })
 
- 
+
 // DELETE /cafe/:id -- delete a cafe from the database
+
 // router.delete('/:yelpId', async (req, res) => {
 //     try {
 //         // delete that thing with that id
@@ -154,4 +162,5 @@ router.delete('/:yelpId/comments/:id', async (req, res) => {
 //     }
     
 // })
+
 module.exports = router
