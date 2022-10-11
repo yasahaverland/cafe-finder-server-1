@@ -38,10 +38,10 @@ const CafeSchema = new mongoose.Schema({
         type: String
     },
     comment: [CommentSchema],
-    user: {
+    user: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
-    }
+    }]
 
 }, { 
     timestamps: true
