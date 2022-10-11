@@ -77,6 +77,24 @@ router.post('/:yelpId/comments', async (req, res) => {
     try {
         const foundCafe = await db.Cafe.findOne({yelpId: req.params.yelpId})
         foundCafe.comment.push({ content: 'hello new coffee shop!', drink_name: 'Americano', drink_score: '5'})
+        foundCafe.save(err => {
+            if (!err) console.log('New comment created!')
+        })
+        res.json(foundCafe)
+    } catch(err) {
+        console.log(err)
+        res.status(500).json({ message: 'internal server error' })
+    }
+})
+
+// PUT /:yelpId/comments/:id -- edit a comment, (if comment look weird in user profile check here).
+router.put('/:yelpId/comments/:id', async (req, res) => {
+    try {
+        const foundCafe = await db.Cafe.findOne({yelpId: req.params.yelpId})
+        foundCafe.comment.splice(req.params.id, 1, { content: 'hello again favorite coffee shop!', drink_name: 'Black coffee', drink_score: '5'})
+        foundCafe.save(err => {
+            if (!err) console.log('Editing comment!')
+        })
         res.json(foundCafe)
     } catch(err) {
         console.log(err)
