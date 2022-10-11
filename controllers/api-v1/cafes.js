@@ -81,6 +81,9 @@ router.post('/:yelpId/comments', async (req, res) => {
     try {
         const foundCafe = await db.Cafe.findOne({yelpId: req.params.yelpId})
         foundCafe.comment.push({ content: 'hello new coffee shop!', drink_name: 'Americano', drink_score: '5'})
+        foundCafe.save(err => {
+            if (!err) console.log('New comment created!')
+        })
         res.json(foundCafe)
     } catch(err) {
         console.log(err)
@@ -88,40 +91,76 @@ router.post('/:yelpId/comments', async (req, res) => {
     }
 })
 
-// PUT /cafes/:id -- update a single cafe -- should not be used unless editing
-router.put('/:yelpId', async (req, res) => {
+// PUT /:yelpId/comments/:id -- edit a comment, (if comment look weird in user profile check here).
+router.put('/:yelpId/comments/:id', async (req, res) => {
     try {
-        // getting the id from the url route parameters
-        // getting the data to update from the request body
-        // ensuring that the query returns the new values with the options object
-        const options = { new: true }
-        const updatedCafe = await db.Cafe.findByIdAndUpdate({ yelpId: req.params.yelpId }, {
-            yelpId: response.data.id,
-            name: response.data.name,
-            location: `${response.data.location.display_address[0]} ${response.data.location.display_address[1]} ${response.data.location.display_address[2]}`,
-            website_link: response.data.url,
-            phone_number: response.data.display_phone,
-            price: response.data.price
-        }, options)
-        res.json(updatedCafe)
-    } catch (err) {
+        const foundCafe = await db.Cafe.findOne({yelpId: req.params.yelpId})
+        foundCafe.comment.splice(req.params.id, 1, { content: 'hello again favorite coffee shop!', drink_name: 'Black coffee', drink_score: '5'})
+        foundCafe.save(err => {
+            if (!err) console.log('Editing comment!')
+        })
+        res.json(foundCafe)
+    } catch(err) {
         console.log(err)
         res.status(500).json({ message: 'internal server error' })
     }
 })
+
+
+// PUT /:yelpId/comments/:id -- edit a comment, (if comment look weird in user profile check here).
+router.delete('/:yelpId/comments/:id', async (req, res) => {
+    try {
+
+        const foundCafe = await db.Cafe.findOne({yelpId: req.params.yelpId})
+        foundCafe.comment.splice(req.params.id, 1)
+        foundCafe.save(err => {
+            if (!err) console.log('Delete comment!')
+        })
+        res.json(foundCafe)
+    } catch(err) {
+
+        console.log(err)
+        res.status(500).json({ message: 'internal server error' })
+    }
+})
+
+
+// PUT /cafes/:id -- update a single cafe -- should not be used unless editing
+// router.put('/:yelpId', async (req, res) => {
+//     try {
+//         // getting the id from the url route parameters
+//         // getting the data to update from the request body
+//         // ensuring that the query returns the new values with the options object
+//         const options = { new: true }
+//         const updatedCafe = await db.Cafe.findByIdAndUpdate({yelpId: req.params.yelpId}, {
+//             yelpId: response.data.id,
+//             name: response.data.name,
+//             location: `${response.data.location.display_address[0]} ${response.data.location.display_address[1]} ${response.data.location.display_address[2]}`,
+//             website_link: response.data.url,
+//             phone_number: response.data.display_phone,
+//             price: response.data.price
+//             }, options)
+//         res.json(updatedCafe)
+//     } catch(err) {
+//         console.log(err)
+//         res.status(500).json({ message: 'internal server error' })
+//     }    
+//  })
 
 
 // DELETE /cafe/:id -- delete a cafe from the database
-router.delete('/:yelpId', async (req, res) => {
-    try {
-        // delete that thing with that id
-        await db.Cafe.findOneAndDelete({ yelpId: req.params.yelpId })
-        // status 204 -- no content (we cannot send and json data back with this)
-        res.sendStatus(204)
-    } catch (err) {
-        console.log(err)
-        res.status(500).json({ message: 'internal server error' })
-    }
 
-})
+// router.delete('/:yelpId', async (req, res) => {
+//     try {
+//         // delete that thing with that id
+//         await db.Cafe.findOneAndDelete({yelpId: req.params.yelpId})
+//         // status 204 -- no content (we cannot send and json data back with this)
+//         res.sendStatus(204)
+//     } catch(err) {
+//         console.log(err)
+//         res.status(500).json({ message: 'internal server error' })
+//     }
+    
+// })
+
 module.exports = router
