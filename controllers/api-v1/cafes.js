@@ -76,6 +76,18 @@ router.post('/:yelpId', async (req, res) => {
     }
 })
 
+// POST /:yelpId/comments -- create a new comment
+router.post('/:yelpId/comments', async (req, res) => {
+    try {
+        const foundCafe = await db.Cafe.findOne({yelpId: req.params.yelpId})
+        foundCafe.comment.push({ content: 'hello new coffee shop!', drink_name: 'Americano', drink_score: '5'})
+        res.json(foundCafe)
+    } catch(err) {
+        console.log(err)
+        res.status(500).json({ message: 'internal server error' })
+    }
+})
+
 // PUT /cafes/:id -- update a single cafe -- should not be used unless editing
 router.put('/:yelpId', async (req, res) => {
     try {
