@@ -11,10 +11,10 @@ const UserSchema = new mongoose.Schema({
   password: {
     type: String
   }, 
-  cafe: {
+  cafe: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Cafe'
-  }
+  }]
 }, {
   timestamps: true
 })
