@@ -53,7 +53,8 @@ router.post('/register', async (req, res) => {
     const payload = {
       name: newUser.name,
       email: newUser.email,
-      id: newUser.id
+      id: newUser.id,
+      cafe: []
     }
 
     // sign jwt and send back
@@ -72,7 +73,7 @@ router.post('/login', async (req, res) => {
     // try to find user in the db
     const foundUser = await db.User.findOne({
       email: req.body.email
-    })
+    }).populate("cafe")
 
     const noLoginMessage = 'Incorrect username or password'
 
@@ -89,7 +90,8 @@ router.post('/login', async (req, res) => {
     const payload = {
       name: foundUser.name,
       email: foundUser.email,
-      id: foundUser.id
+      id: foundUser.id,
+      cafe: foundUser.cafe
     }
 
     // sign jwt and send back
