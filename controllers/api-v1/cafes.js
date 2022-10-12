@@ -2,6 +2,8 @@ const router = require('express').Router()
 const db = require('../../models')
 const axios = require('axios')
 require('dotenv').config()
+// const jwt = require('jsonwebtoken')
+// const authLockedRoute = require('./authLockedRoute')
 
 // GET /cafes/:searchId
 router.get('/results/:searchId', async (req, res) => {
@@ -126,26 +128,43 @@ router.delete('/:yelpId/comments/:id', async (req, res) => {
 
 
 // PUT /cafes/:id -- update a single cafe -- should not be used unless editing
-// router.put('/:yelpId', async (req, res) => {
-//     try {
-//         // getting the id from the url route parameters
-//         // getting the data to update from the request body
-//         // ensuring that the query returns the new values with the options object
-//         const options = { new: true }
-//         const updatedCafe = await db.Cafe.findByIdAndUpdate({yelpId: req.params.yelpId}, {
-//             yelpId: response.data.id,
-//             name: response.data.name,
-//             location: `${response.data.location.display_address[0]} ${response.data.location.display_address[1]} ${response.data.location.display_address[2]}`,
-//             website_link: response.data.url,
-//             phone_number: response.data.display_phone,
-//             price: response.data.price
-//             }, options)
-//         res.json(updatedCafe)
-//     } catch(err) {
-//         console.log(err)
-//         res.status(500).json({ message: 'internal server error' })
-//     }    
-//  })
+router.put('/:yelpId/:userId', async (req, res) => {
+    try {
+        // const foundCafe = await db.Cafe.findOne({ yelpId: req.params.yelpId })
+        const foundCafe = await db.Cafe.findOne({ yelpId: req.params.yelpId })
+        const foundUser = await db.User.findOne({ _id: req.params.userId })
+
+        console.log(foundCafe)
+        
+        if(foundUser.cafe.includes(foundCafe._id) == true) {
+            foundCafe.user.splice(foundCafe.user.indexOf(foundUser._id), 1)
+            foundUser.cafe.splice(foundUser.cafe.indexOf(foundCafe._id), 1)
+            foundCafe.save(err => {
+                if (!err) console.log('deleting user from cafe')
+            })
+            foundUser.save(err => {
+                if (!err) console.log('deleting cafe from user')
+            })
+
+        // } else if(!foundCafe.user.includes(req.params.userId)) {
+        } else {
+            foundCafe.user.push(foundUser)
+            foundUser.cafe.push(foundCafe)
+            foundCafe.save(err => {
+                if (!err) console.log('adding user to cafe', req.params.userId)
+            })
+            foundUser.save(err => {
+                if (!err) console.log('Adding cafe to user')
+            })
+        }
+        
+
+        res.json(foundCafe)
+    } catch(err) {
+        console.log(err)
+        res.status(500).json({ message: 'internal server error' })
+    }    
+ })
 
 
 // DELETE /cafe/:id -- delete a cafe from the database
@@ -162,5 +181,12 @@ router.delete('/:yelpId/comments/:id', async (req, res) => {
 //     }
     
 // })
+
+// GET /auth-locked - will redirect if bad jwt token is found
+// router.get('/auth-locked', authLockedRoute, (req, res) => {
+//     // you will have access to the user on the res.locals.user
+//     console.log(res.locals)
+//     res.json( { msg: 'welcome to the private route!' })
+//   })
 
 module.exports = router
