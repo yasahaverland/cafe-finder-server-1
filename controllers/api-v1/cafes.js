@@ -52,7 +52,8 @@ router.get('/:yelpId', async (req, res) => {
                     price: response.data.price
                 }
             }, { upsert: true })
-        const foundCafe = await db.Cafe.findOne({ yelpId: req.params.yelpId })
+        const foundCafe = await db.Cafe.findOne({ yelpId: req.params.yelpId }).populate({path: 'comment', populate: 'user'})
+        console.log(foundCafe.comment)
         res.json(foundCafe)
     } catch (err) {
         console.log(err)
@@ -79,12 +80,14 @@ router.post('/:yelpId', async (req, res) => {
 })
 
 // POST /:yelpId/comments -- create a new comment
-router.post('/:yelpId/comments', async (req, res) => {
+router.post('/:yelpId/:userId/comments', async (req, res) => {
     try {
         const foundCafe = await db.Cafe.findOne({yelpId: req.params.yelpId})
-        foundCafe.comment.push({ content: 'hello new coffee shop!', drink_name: 'Americano', drink_score: '5'})
+        const foundUser = await db.User.findOne({ _id: req.params.userId })
+        
+        foundCafe.comment.push({ content: req.body.content, drink_name: req.body.drink_name, drink_score: req.body.drink_score, user: foundUser })
         foundCafe.save(err => {
-            if (!err) console.log('New comment created!')
+            if (!err) console.log('New comment created!', req.body.content)
         })
         res.json(foundCafe)
     } catch(err) {
