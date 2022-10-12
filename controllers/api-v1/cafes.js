@@ -89,7 +89,17 @@ router.post('/:yelpId/:userId/comments', async (req, res) => {
         foundCafe.save(err => {
             if (!err) console.log('New comment created!', req.body.content)
         })
-        res.json(foundCafe)
+        const payload = {
+            name: foundUser.name,
+            email: foundUser.email,
+            id: foundUser.id,
+            cafe: foundUser.cafe
+        }
+
+        // sign jwt and send back
+        const token = await jwt.sign(payload, process.env.JWT_SECRET)
+
+        res.json({ foundCafe, token })
     } catch(err) {
         console.log(err)
         res.status(500).json({ message: 'internal server error' })
