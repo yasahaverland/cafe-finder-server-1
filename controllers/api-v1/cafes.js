@@ -109,7 +109,7 @@ router.put('/:yelpId/comments/:id', async (req, res) => {
 })
 
 
-// PUT /:yelpId/comments/:id -- edit a comment, (if comment look weird in user profile check here).
+// DELETE /:yelpId/comments/:id -- deletes a comment, (if comment look weird in user profile check here).
 router.delete('/:yelpId/comments/:id', async (req, res) => {
     try {
 
@@ -127,7 +127,10 @@ router.delete('/:yelpId/comments/:id', async (req, res) => {
 })
 
 
-// PUT /cafes/:id -- update a single cafe -- should not be used unless editing
+
+
+
+// PUT /cafes/:id -- saves/removes a cafe from user's Model and saves/removes a user from the cafe's Model
 router.put('/:yelpId/:userId', async (req, res) => {
     try {
         // const foundCafe = await db.Cafe.findOne({ yelpId: req.params.yelpId })
@@ -145,8 +148,6 @@ router.put('/:yelpId/:userId', async (req, res) => {
             foundUser.save(err => {
                 if (!err) console.log('deleting cafe from user')
             })
-
-        // } else if(!foundCafe.user.includes(req.params.userId)) {
         } else {
             foundCafe.user.push(foundUser)
             foundUser.cafe.push(foundCafe)
@@ -166,27 +167,5 @@ router.put('/:yelpId/:userId', async (req, res) => {
     }    
  })
 
-
-// DELETE /cafe/:id -- delete a cafe from the database
-
-// router.delete('/:yelpId', async (req, res) => {
-//     try {
-//         // delete that thing with that id
-//         await db.Cafe.findOneAndDelete({yelpId: req.params.yelpId})
-//         // status 204 -- no content (we cannot send and json data back with this)
-//         res.sendStatus(204)
-//     } catch(err) {
-//         console.log(err)
-//         res.status(500).json({ message: 'internal server error' })
-//     }
-    
-// })
-
-// GET /auth-locked - will redirect if bad jwt token is found
-// router.get('/auth-locked', authLockedRoute, (req, res) => {
-//     // you will have access to the user on the res.locals.user
-//     console.log(res.locals)
-//     res.json( { msg: 'welcome to the private route!' })
-//   })
 
 module.exports = router
