@@ -128,19 +128,37 @@ router.delete('/:yelpId/comments/:id', async (req, res) => {
 
 
 // PUT /cafes/:id -- update a single cafe -- should not be used unless editing
-router.put('/:yelpId', async (req, res) => {
+router.put('/:yelpId/:userId', async (req, res) => {
     try {
-        // const foundUser = await db.User.findOne({ email: req.params.email })
+        // const foundCafe = await db.Cafe.findOne({ yelpId: req.params.yelpId })
         const foundCafe = await db.Cafe.findOne({ yelpId: req.params.yelpId })
-        const foundUser = await db.User.findOne({ email: "t@p.com" })
-        foundCafe.user.push(foundUser)
-        foundUser.cafe.push(foundCafe)
-        foundCafe.save(err => {
-            if (!err) console.log('adding user to cafe')
-        })
-        foundUser.save(err => {
-            if (!err) console.log('Adding cafe to user')
-        })
+        const foundUser = await db.User.findOne({ _id: req.params.userId })
+
+        console.log(foundCafe)
+        
+        if(foundUser.cafe.includes(foundCafe._id) == true) {
+            foundCafe.user.splice(foundCafe.user.indexOf(foundUser._id), 1)
+            foundUser.cafe.splice(foundUser.cafe.indexOf(foundCafe._id), 1)
+            foundCafe.save(err => {
+                if (!err) console.log('deleting user from cafe')
+            })
+            foundUser.save(err => {
+                if (!err) console.log('deleting cafe from user')
+            })
+
+        // } else if(!foundCafe.user.includes(req.params.userId)) {
+        } else {
+            foundCafe.user.push(foundUser)
+            foundUser.cafe.push(foundCafe)
+            foundCafe.save(err => {
+                if (!err) console.log('adding user to cafe', req.params.userId)
+            })
+            foundUser.save(err => {
+                if (!err) console.log('Adding cafe to user')
+            })
+        }
+        
+
         res.json(foundCafe)
     } catch(err) {
         console.log(err)
