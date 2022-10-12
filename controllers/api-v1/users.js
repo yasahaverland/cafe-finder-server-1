@@ -10,19 +10,6 @@ router.get('/', (req, res) => {
   res.json({ msg: 'welcome to the users endpoint' })
 })
 
-// api-v1/users/:userId
-router.get('/:userEmail', async (req, res) => {
-  try {
-    const aUser = await db.User.findOne({
-      email: req.params.userEmail
-    })
-    const hexTest = aUser._id.toHexString()
-    res.json(hexTest)
-  } catch (error) {
-    console.log(error)
-    res.status(500).json({ msg: 'server error' })
-  }
-})
 
 // POST /users/register - CREATE new user
 router.post('/register', async (req, res) => {

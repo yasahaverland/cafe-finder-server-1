@@ -2,7 +2,7 @@ const router = require('express').Router()
 const db = require('../../models')
 const axios = require('axios')
 require('dotenv').config()
-// const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken')
 // const authLockedRoute = require('./authLockedRoute')
 
 // GET /cafes/:searchId
@@ -163,7 +163,7 @@ router.put('/:yelpId/:userId', async (req, res) => {
             const token = await jwt.sign(payload, process.env.JWT_SECRET)
         
             res.json({foundCafe,  token })
-            
+
         } else {
             foundCafe.user.push(foundUser)
             foundUser.cafe.push(foundCafe)
