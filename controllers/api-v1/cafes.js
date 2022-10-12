@@ -137,30 +137,56 @@ router.put('/:yelpId/:userId', async (req, res) => {
         const foundCafe = await db.Cafe.findOne({ yelpId: req.params.yelpId })
         const foundUser = await db.User.findOne({ _id: req.params.userId })
 
-        console.log(foundCafe)
+        // console.log(foundCafe)
         
         if(foundUser.cafe.includes(foundCafe._id) == true) {
             foundCafe.user.splice(foundCafe.user.indexOf(foundUser._id), 1)
             foundUser.cafe.splice(foundUser.cafe.indexOf(foundCafe._id), 1)
+            // update token here
             foundCafe.save(err => {
                 if (!err) console.log('deleting user from cafe')
             })
             foundUser.save(err => {
                 if (!err) console.log('deleting cafe from user')
             })
+            const payload = {
+                name: foundUser.name,
+                email: foundUser.email,
+                id: foundUser.id,
+                cafe: foundUser.cafe
+            }
+        
+            // sign jwt and send back
+            const token = await jwt.sign(payload, process.env.JWT_SECRET)
+        
+            res.json({foundCafe,  token })
+            
         } else {
             foundCafe.user.push(foundUser)
             foundUser.cafe.push(foundCafe)
+            // and update token here
             foundCafe.save(err => {
                 if (!err) console.log('adding user to cafe', req.params.userId)
             })
             foundUser.save(err => {
                 if (!err) console.log('Adding cafe to user')
             })
-        }
+    
+            // create jwt payload
+            const payload = {
+                name: foundUser.name,
+                email: foundUser.email,
+                id: foundUser.id,
+                cafe: foundUser.cafe
+            }
         
+            // sign jwt and send back
+            const token = await jwt.sign(payload, process.env.JWT_SECRET)
+        
+            res.json({foundCafe,  token })
 
-        res.json(foundCafe)
+        }
+
     } catch(err) {
         console.log(err)
         res.status(500).json({ message: 'internal server error' })

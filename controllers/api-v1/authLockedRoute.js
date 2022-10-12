@@ -9,7 +9,9 @@ const authLockedRoute = async (req, res, next) => {
     // will throw to catch if jwt can't be verified
     const decode = await jwt.verify(authHeader, process.env.JWT_SECRET)
     // find user from db
-    const foundUser = await db.User.findById(decode.id)
+    const foundUser = await db.User.findById(decode.id).populate("cafe")
+  
+    console.log('USEEEER',foundUser.cafe)
     // mount user on locals
     res.locals.user = foundUser
     next()
