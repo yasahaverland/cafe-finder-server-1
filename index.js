@@ -37,7 +37,7 @@ app.get('/', (req, res) => {
   res.json("Hello from backend")
 })
 
-app.use('/api-v1/', require('./controllers/api-v1/home.js'))
+// app.use('/api-v1/', require('./controllers/api-v1/home.js'))
   
   // controllers
   // prefixing the routes with a semantic version 
@@ -47,7 +47,7 @@ app.use('/api-v1/', require('./controllers/api-v1/home.js'))
   app.use('/api-v1/cafes', require('./controllers/api-v1/cafes.js'))
   
   // comments.js controller routing
-  app.use('/api-v1/comments', require('./controllers/api-v1/comments.js'))
+  // app.use('/api-v1/comments', require('./controllers/api-v1/comments.js'))
   
   // hey listen
 app.listen(PORT, () => {
