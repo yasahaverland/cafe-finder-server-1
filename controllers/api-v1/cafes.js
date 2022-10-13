@@ -166,7 +166,7 @@ router.put('/:yelpId/:userId', async (req, res) => {
     try {
         // const foundCafe = await db.Cafe.findOne({ yelpId: req.params.yelpId })
         const foundCafe = await db.Cafe.findOne({ yelpId: req.params.yelpId })
-        const foundUser = await db.User.findOne({ _id: req.params.userId })
+        const foundUser = await db.User.findOne({ _id: req.params.userId }).populate('cafe')
 
         // console.log(foundCafe)
 
@@ -196,6 +196,12 @@ router.put('/:yelpId/:userId', async (req, res) => {
             foundUser.save()
 
             // create jwt payload
+            // const payload = {
+            //     name: foundUser.name,
+            //     email: foundUser.email,
+            //     id: foundUser.id,
+            //     cafe: foundUser.cafe
+            // }
             const payload = {
                 name: foundUser.name,
                 email: foundUser.email,
