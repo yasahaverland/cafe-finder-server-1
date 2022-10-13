@@ -10,7 +10,6 @@ router.get('/', (req, res) => {
   res.json({ msg: 'welcome to the users endpoint' })
 })
 
-
 // POST /users/register - CREATE new user
 router.post('/register', async (req, res) => {
   try {
