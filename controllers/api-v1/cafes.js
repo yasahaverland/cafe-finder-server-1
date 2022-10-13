@@ -82,10 +82,12 @@ router.post('/:yelpId', async (req, res) => {
 // POST /:yelpId/comments -- create a new comment
 router.post('/:yelpId/:userId/comments', async (req, res) => {
     try {
-        const foundCafe = await db.Cafe.findOne({ yelpId: req.params.yelpId })
+        const foundCafe = await db.Cafe.findOne({ yelpId: req.params.yelpId }).populate('comment')
         const foundUser = await db.User.findOne({ _id: req.params.userId })
 
-        foundCafe.comment.push({ content: req.body.content, drink_name: req.body.drink_name, drink_score: req.body.drink_score, user: foundUser })
+        console.log(foundCafe)
+
+        foundCafe.comment.push({ content: req.body.content, drink_name: req.body.drink_name, drink_score: req.body.drink_score, user: foundUser})
         await foundCafe.save()
         const payload = {
             name: foundUser.name,
@@ -107,10 +109,10 @@ router.post('/:yelpId/:userId/comments', async (req, res) => {
 // PUT /:yelpId/:id/:comments -- edit a comment, (if comment look weird in user profile check here).
 router.put('/:yelpId/:id/comments', async (req, res) => {
     try {
-        const foundCafe = await db.Cafe.findOne({ yelpId: req.params.yelpId })
+        const foundCafe = await db.Cafe.findOne({ yelpId: req.params.yelpId }).populate('comment')
         const foundUser = await db.User.findOne({ _id: req.params.id })
 
-        foundCafe.comment.splice(req.params.id, 1, { content: req.body.content, drink_name: req.body.drink_name, drink_score: req.body.drink_score })
+        foundCafe.comment.splice(req.params.id, 1, { content: req.body.content, drink_name: req.body.drink_name, drink_score: req.body.drink_score, user: foundUser })
 
         await foundCafe.save()
         const payload = {
@@ -168,9 +170,9 @@ router.put('/:yelpId/:userId', async (req, res) => {
         const foundCafe = await db.Cafe.findOne({ yelpId: req.params.yelpId })
         const foundUser = await db.User.findOne({ _id: req.params.userId }).populate('cafe')
 
-        // console.log(foundCafe)
 
-        if (foundUser.cafe.includes(foundCafe._id) == true) {
+        // if (foundUser.cafe.includes(foundCafe.id) == true) {
+        if (foundCafe.user.includes(foundUser._id) === true) {
             foundCafe.user.splice(foundCafe.user.indexOf(foundUser._id), 1)
             foundUser.cafe.splice(foundUser.cafe.indexOf(foundCafe._id), 1)
             // update token here
@@ -195,13 +197,6 @@ router.put('/:yelpId/:userId', async (req, res) => {
             foundCafe.save()
             foundUser.save()
 
-            // create jwt payload
-            // const payload = {
-            //     name: foundUser.name,
-            //     email: foundUser.email,
-            //     id: foundUser.id,
-            //     cafe: foundUser.cafe
-            // }
             const payload = {
                 name: foundUser.name,
                 email: foundUser.email,
